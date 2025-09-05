@@ -10,7 +10,7 @@ __Lazy__
 
 ```lua
 return {
-	'https://github.com/NeoSahadeo/lsp-toggle.nvim/',
+	'NeoSahadeo/lsp-toggle.nvim/',
 	config = function()
 		require('lsp-toggle').setup()
 	end,
