@@ -1,8 +1,8 @@
-local fileutils = require('fileutils')
-local commands = require('commands')
-local window = require('window')
-local toggle = require('toggle')
-local utils = require('utils')
+local fileutils = require('lsp-toggle.fileutils')
+local commands = require('lsp-toggle.commands')
+local window = require('lsp-toggle.window')
+local toggle = require('lsp-toggle.toggle')
+local utils = require('lsp-toggle.utils')
 
 local function setup()
 	vim.api.nvim_create_autocmd('LspAttach', {

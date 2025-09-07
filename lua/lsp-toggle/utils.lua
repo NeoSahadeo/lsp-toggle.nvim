@@ -1,4 +1,4 @@
-local fileutils = require('fileutils')
+local fileutils = require('lsp-toggle.fileutils')
 
 local M = {
 	clients = {},

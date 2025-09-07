@@ -1,7 +1,7 @@
 -- the main toggle function
-local file = require('fileutils')
-local window = require('window')
-local utils = require('utils')
+local file = require('lsp-toggle.fileutils')
+local window = require('lsp-toggle.window')
+local utils = require('lsp-toggle.utils')
 
 local M = {}
 
