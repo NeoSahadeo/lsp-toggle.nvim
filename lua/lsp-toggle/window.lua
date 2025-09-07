@@ -1,5 +1,5 @@
-local fileutils = require('fileutils')
-local utils = require('utils')
+local fileutils = require('lsp-toggle.fileutils')
+local utils = require('lsp-toggle.utils')
 
 local width = vim.api.nvim_win_get_width(0)
 local height = vim.api.nvim_win_get_height(0)

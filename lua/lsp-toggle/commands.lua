@@ -1,6 +1,6 @@
-local fileutils = require('fileutils')
-local toggle = require('toggle')
-local window = require('window')
+local fileutils = require('lsp-toggle.fileutils')
+local toggle = require('lsp-toggle.toggle')
+local window = require('lsp-toggle.window')
 
 local M = {
 	is_open = false,
