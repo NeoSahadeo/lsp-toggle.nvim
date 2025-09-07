@@ -1,42 +1,53 @@
-local fileutils = require('lsp-toggle.fileutils')
 local utils = require('lsp-toggle.utils')
 
-local width = vim.api.nvim_win_get_width(0)
-local height = vim.api.nvim_win_get_height(0)
+local M = {}
 
-local M = {
-	out_buf_table = {},
-	window_buf = nil,
-	window_id = nil,
-}
+M.out_buf_table = {}
 
 function M.clear()
 	M.out_buf_table = {}
 	M.print_display({})
 end
 
+---@param clients table<string, ToggleClient>
 function M.print_display(clients)
+	---@type string[]
 	M.out_buf_table = {}
-	for _, tb_server in ipairs(clients) do
-		table.insert(M.out_buf_table, (tb_server.enabled and '[x] ' or '[ ] ') .. tb_server.server_name)
+
+	for name, client in pairs(clients) do
+		table.insert(M.out_buf_table, (client.enabled and '[x] ' or '[ ] ') .. name)
 	end
 
 	local safe_fn = vim.schedule_wrap(function()
+		vim.bo.modifiable = true
 		vim.api.nvim_buf_set_lines(M.window_buf, 0, -1, false, M.out_buf_table)
+		vim.bo.modifiable = false
 	end)
 	safe_fn()
 end
 
 function M.open_window()
-	utils.merge_table_pf()
+	utils.load_all_clients()
+	local f_height = 0
 
-	local dynamic_height = #utils.clients
-	if #M.out_buf_table > 20 then
-		dynamic_height = 20
+	for _, _ in ipairs(vim.tbl_keys(utils.clients)) do
+		f_height = f_height + 1
 	end
 
+	local height = vim.o.lines
+	local width = vim.o.columns
 	local f_width = 30
-	local f_height = dynamic_height
+	if #M.out_buf_table > 20 then
+		f_height = 20
+	end
+
+	M.win_stats = {
+		height = height,
+		width = width,
+		f_width = f_width,
+		f_height = f_height,
+	}
+
 	M.window_buf = vim.api.nvim_create_buf(false, true)
 	M.print_display(utils.clients)
 
@@ -45,12 +56,17 @@ function M.open_window()
 		title_pos = 'center',
 		relative = 'editor',
 		width = f_width,
-		height = f_height,
+		height = f_height ~= 0 and f_height or 1,
 		border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
-		col = (width / 2) - (f_width / 2),
-		row = (height / 2) - (f_height / 2),
+		col = math.floor((width / 2) - (f_width / 2)),
+		row = math.floor((height / 2) - (f_height / 2)),
 		style = 'minimal',
 	})
+
+	local keymap_opts = { buffer = M.window_buf, noremap = true, silent = true }
+
+	vim.keymap.set('n', 'q', '<CMD>q!<CR>', keymap_opts)
+	vim.keymap.set('n', '<Esc>', '<CMD>q!<CR>', keymap_opts)
 end
 
 function M.close_window()

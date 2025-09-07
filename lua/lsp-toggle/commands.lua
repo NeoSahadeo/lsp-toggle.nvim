@@ -1,10 +1,8 @@
-local fileutils = require('lsp-toggle.fileutils')
 local toggle = require('lsp-toggle.toggle')
 local window = require('lsp-toggle.window')
 
-local M = {
-	is_open = false,
-}
+local M = {}
+M.is_open = false
 
 local function register_keybinds()
 	vim.keymap.set('n', '<CR>', toggle.handle_toggle)
@@ -28,11 +26,6 @@ function M.register_commands()
 			window.open_window()
 		end
 	end, { desc = 'Toggle the window to display active lsps' })
-
-	vim.api.nvim_create_user_command('ToggleLSPClearCache', function()
-		vim.fn.delete(fileutils.root_dir, 'rf')
-		print('Cleared cache, you should probably restart nvim')
-	end, { desc = 'Clear the local cache for lsp-toggle' })
 end
 
 return M
