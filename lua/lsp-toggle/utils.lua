@@ -3,9 +3,11 @@
 local M = {}
 
 ---@class ToggleClient
----@field enabled boolean
----@field config vim.lsp.ClientConfig
----@field id integer
+---@field enabled? boolean
+---@field config? vim.lsp.Client
+---@field id? integer
+
+---@type table<string, ToggleClient>
 M.clients = {}
 
 function M.load_all_clients()
@@ -17,8 +19,8 @@ function M.load_all_clients()
 
 	for _, client in ipairs(active_clients) do
 		M.clients[client.name] = {
-			enabled = client.initialized,
-			config = vim.deepcopy(client.config),
+			enabled = vim.lsp.is_enabled(client.name),
+			config = vim.deepcopy(client),
 			id = client.id,
 		}
 	end
@@ -27,7 +29,7 @@ end
 function M.drop_unused_clients()
 	local dropped = false
 
-	if vim.tbl_isempty(M.clients) then
+	if not M.clients or vim.tbl_isempty(M.clients) then
 		return dropped
 	end
 
