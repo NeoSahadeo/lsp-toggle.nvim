@@ -1,12 +1,12 @@
 ---@module 'vim.lsp'
 
 local M = {}
-M.clients = {}
 
 ---@class ToggleClient
 ---@field enabled boolean
 ---@field config vim.lsp.ClientConfig
 ---@field id integer
+M.clients = {}
 
 function M.load_all_clients()
 	local active_clients = vim.lsp.get_clients()
@@ -22,6 +22,23 @@ function M.load_all_clients()
 			id = client.id,
 		}
 	end
+end
+
+function M.drop_unused_clients()
+	local dropped = false
+
+	if vim.tbl_isempty(M.clients) then
+		return dropped
+	end
+
+	for name, client in pairs(M.clients) do
+		if not vim.lsp.buf_is_attached(0, client.id) then
+			M.clients[name] = nil
+			dropped = true
+		end
+	end
+
+	return dropped
 end
 
 return M
