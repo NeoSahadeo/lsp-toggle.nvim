@@ -4,20 +4,21 @@ local window = require('lsp-toggle.window')
 local toggle = require('lsp-toggle.toggle')
 local utils = require('lsp-toggle.utils')
 
-local function setup()
+local M = {}
+
+function M.setup()
 	vim.api.nvim_create_autocmd('LspAttach', {
 		callback = function(args)
-			local bufnr = args.buf -- multi-buffer issue
 			if vim.bo.buftype == '' then
-				fileutils.file_path = vim.api.nvim_buf_get_name(0)
+				fileutils.file_path = vim.api.nvim_buf_get_name(args.buf)
 
 				utils.merge_table_pf()
 
 				for _, c in ipairs(utils.clients) do
 					if c.enabled then
-						vim.cmd('LspStart ' .. c.server_name)
+						vim.cmd.LspStart(c.server_name)
 					else
-						vim.cmd('LspStop ' .. c.server_name)
+						vim.cmd.LspStop(c.server_name)
 					end
 				end
 			end
@@ -43,4 +44,4 @@ local function setup()
 	commands.register_commands()
 end
 
-return { setup = setup }
+return M
