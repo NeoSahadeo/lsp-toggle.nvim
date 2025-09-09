@@ -21,13 +21,13 @@ return {
 
 To toggle the menu run
 
-```vimscript
+```vim
 :ToggleLSP
 ```
 
 
 To clear the cache run
 
-```vimscript
+```vim
 :ToggleLSPClearCache
 ```
