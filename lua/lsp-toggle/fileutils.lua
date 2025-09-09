@@ -45,7 +45,7 @@ function M.save(data)
 		return nil
 	end
 
-	vim.uv.fs_write(fd ,vim.fn.json_encode(data))
+	vim.uv.fs_write(fd, vim.fn.json_encode(data))
 	vim.uv.fs_close(fd)
 	return true
 end
