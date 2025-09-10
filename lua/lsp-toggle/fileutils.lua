@@ -6,7 +6,7 @@ M.root_dir = vim.fn.stdpath('cache') .. '/lsp-toggle/'
 M.file_path = ''
 
 ---@param str string
----@return integer hash
+---@return string hash
 local function djb2(str)
 	local hash = 5381
 	for i = 1, str:len() do
@@ -14,16 +14,16 @@ local function djb2(str)
 		hash = hash * 33 + c
 	end
 
-	---@cast hash integer
-	return hash
+	return tostring(hash)
 end
 
+---@return string
 function M.produce_path()
 	if vim.fn.mkdir(M.root_dir, 'p') ~= 1 then
 		error('[File] Failed to create directory!', vim.log.levels.ERROR)
 	end
 
-	return M.root_dir .. tostring(djb2(M.file_path)) .. '.json'
+	return M.root_dir .. djb2(M.file_path) .. '.json'
 end
 
 ---@param data table<string, { enabled: boolean, server_name: string }>
