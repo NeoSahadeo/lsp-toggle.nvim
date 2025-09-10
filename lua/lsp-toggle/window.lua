@@ -1,8 +1,5 @@
 local utils = require('lsp-toggle.utils')
 
-local width = vim.api.nvim_win_get_width(0)
-local height = vim.api.nvim_win_get_height(0)
-
 local M = {}
 M.out_buf_table = {}
 
@@ -46,8 +43,8 @@ function M.open_window()
 		width = f_width,
 		height = f_height,
 		border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
-		col = math.floor((width - f_width) / 2),
-		row = math.floor((height - f_height) / 2),
+		col = math.floor((vim.o.columns - f_width) / 2),
+		row = math.floor((vim.o.lines - f_height) / 2),
 		style = 'minimal',
 	})
 
