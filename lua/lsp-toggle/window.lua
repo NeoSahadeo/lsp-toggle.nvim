@@ -1,24 +1,16 @@
-local fileutils = require('lsp-toggle.fileutils')
 local utils = require('lsp-toggle.utils')
 
-local width = vim.api.nvim_win_get_width(0)
-local height = vim.api.nvim_win_get_height(0)
+local M = {}
+M.out_buf_table = {}
 
-local M = {
-	out_buf_table = {},
-	window_buf = nil,
-	window_id = nil,
-}
-
-function M.clear()
-	M.out_buf_table = {}
-	M.print_display({})
-end
-
+---@param clients table<string, { enabled: boolean, server_name: string }>
 function M.print_display(clients)
 	M.out_buf_table = {}
-	for _, tb_server in ipairs(clients) do
-		table.insert(M.out_buf_table, (tb_server.enabled and '[x] ' or '[ ] ') .. tb_server.server_name)
+	for _, tb_server in pairs(clients) do
+		table.insert(
+			M.out_buf_table,
+			(tb_server.enabled and '[x] ' or '[ ] ') .. tb_server.server_name
+		)
 	end
 
 	local safe_fn = vim.schedule_wrap(function()
@@ -28,9 +20,19 @@ function M.print_display(clients)
 end
 
 function M.open_window()
+	if M.window_id then
+		return
+	end
+
 	utils.merge_table_pf()
 
-	local dynamic_height = #utils.clients
+	local dynamic_height = 0
+	for _, _ in pairs(utils.clients) do
+		dynamic_height = dynamic_height + 1
+	end
+
+	dynamic_height = dynamic_height > 0 and dynamic_height or 1
+
 	if #M.out_buf_table > 20 then
 		dynamic_height = 20
 	end
@@ -47,15 +49,23 @@ function M.open_window()
 		width = f_width,
 		height = f_height,
 		border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
-		col = (width / 2) - (f_width / 2),
-		row = (height / 2) - (f_height / 2),
+		col = math.floor((vim.o.columns - f_width) / 2),
+		row = math.floor((vim.o.lines - f_height) / 2),
 		style = 'minimal',
 	})
+
+	local map_opts = { buffer = M.window_buf, noremap = true, silent = true }
+	vim.keymap.set('n', 'q', M.close_window, map_opts)
+	vim.keymap.set('n', '<Esc>', M.close_window, map_opts)
+
+	--- WARN: Leave the `require('lsp-toggle.toggle')...` as is, or it'll break!
+	vim.keymap.set('n', '<CR>', require('lsp-toggle.toggle').handle_toggle, map_opts)
 end
 
 function M.close_window()
 	if M.window_id then
-		pcall(vim.api.nvim_win_close, M.window_id, true)
+		vim.api.nvim_win_close(M.window_id, true)
+		M.window_id = nil
 	end
 end
 

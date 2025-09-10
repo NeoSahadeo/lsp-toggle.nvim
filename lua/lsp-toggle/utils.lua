@@ -1,49 +1,38 @@
 local fileutils = require('lsp-toggle.fileutils')
 
-local M = {
-	clients = {},
-}
+local M = {}
+
+---@type table<string, { enabled: boolean, server_name: string }>
+M.clients = {}
 
 function M.load_all_clients()
-	local p = {}
-	local mason_lspconfig = require('mason-lspconfig')
-	for _, server in ipairs(mason_lspconfig.get_installed_servers()) do
-		table.insert(p, {
-			enabled = false,
-			server_name = server,
-		})
-	end
+	local clients = vim.lsp.get_clients()
 
-	local active_clients = vim.lsp.get_clients()
-	for index, all in ipairs(p) do
-		for _, a_client in ipairs(active_clients) do
-			if all.server_name == a_client.name then
-				p[index].enabled = true
-			end
-		end
+	for _, client in ipairs(clients) do
+		M.clients[client.name] = {
+			enabled = vim.lsp.is_enabled(client.name),
+			server_name = client.name,
+		}
 	end
-	return p
 end
 
 function M.merge_table_pf()
-	local all_clients = M.load_all_clients()
+	M.load_all_clients()
 	local file_clients = fileutils.load() or {} -- LSPAttach should set file path
 
-	local clients = {}
 	-- merge tables with priority to file
-	for _, c in ipairs(all_clients) do
+	for name, client in pairs(M.clients) do
 		local added = false
-		for _, fc in ipairs(file_clients) do
-			if fc.server_name == c.server_name then
-				table.insert(clients, fc)
+		for fname, fclient in pairs(file_clients) do
+			if fclient.server_name == client.server_name then
+				M.clients[fname] = fclient
 				added = true
 			end
 		end
 		if not added then
-			table.insert(clients, c)
+			M.clients[name] = client
 		end
 	end
-	M.clients = clients
 end
 
 return M
