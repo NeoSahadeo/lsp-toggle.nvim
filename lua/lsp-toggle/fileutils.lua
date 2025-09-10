@@ -1,7 +1,6 @@
 local M = {}
 
-M.cache_path = vim.fn.stdpath('cache')
-M.root_dir = M.cache_path .. '/lsp-toggle/'
+M.root_dir = vim.fn.stdpath('cache') .. '/lsp-toggle/'
 
 -- Set to empty string to avoid null
 M.file_path = ''
@@ -20,18 +19,14 @@ local function djb2(str)
 end
 
 function M.produce_path()
-	if M.file_path == '' then
-		error('[File] Cannot connect to buffer!', vim.log.levels.ERROR)
-	end
-
 	if vim.fn.mkdir(M.root_dir, 'p') ~= 1 then
 		error('[File] Failed to create directory!', vim.log.levels.ERROR)
 	end
 
-	return M.root_dir .. djb2(M.file_path) .. '.json'
+	return M.root_dir .. tostring(djb2(M.file_path)) .. '.json'
 end
 
----@param data { enabled: boolean, server_name: string }[]
+---@param data table<string, { enabled: boolean, server_name: string }>
 ---@return boolean|nil
 function M.save(data)
 	local path = M.produce_path()
@@ -50,7 +45,7 @@ function M.save(data)
 	return true
 end
 
----@return { enabled: boolean, server_name: string }[]?
+---@return table<string, { enabled: boolean, server_name: string }>|nil
 function M.load()
 	-- returns lspClients
 	local path = M.produce_path()
