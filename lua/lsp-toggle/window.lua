@@ -20,18 +20,18 @@ function M.print_display(clients)
 end
 
 function M.open_window()
-    if M.window_id then
-        return
-    end
+	if M.window_id then
+		return
+	end
 
 	utils.merge_table_pf()
 
-    local dynamic_height = 0
-    for _, _ in pairs(utils.clients) do
-        dynamic_height = dynamic_height + 1
-    end
+	local dynamic_height = 0
+	for _, _ in pairs(utils.clients) do
+		dynamic_height = dynamic_height + 1
+	end
 
-    dynamic_height = dynamic_height > 0 and dynamic_height or 1
+	dynamic_height = dynamic_height > 0 and dynamic_height or 1
 
 	if #M.out_buf_table > 20 then
 		dynamic_height = 20
@@ -65,7 +65,7 @@ end
 function M.close_window()
 	if M.window_id then
 		vim.api.nvim_win_close(M.window_id, true)
-        M.window_id = nil
+		M.window_id = nil
 	end
 end
 
