@@ -18,7 +18,6 @@ function M.handle_toggle()
 			vim.lsp.enable(server_name, enabled)
 		end
 	end
-	-- vim.cmd.LspRestart() -- force restart
 
 	window.print_display(utils.clients)
 	file.save(utils.clients)

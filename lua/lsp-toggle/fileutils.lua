@@ -19,18 +19,18 @@ end
 
 ---@param path string
 function M.set_file_path(path)
-    M.file_path = path
+	M.file_path = path
 end
 
 ---@return string
 function M.produce_path()
-    if M.file_path == '' then
-        error('[File] LspToggle file is empty!', vim.log.levels.ERROR)
-    end
+	if M.file_path == '' then
+		error('[File] LspToggle file is empty!', vim.log.levels.ERROR)
+	end
 
-    if vim.fn.mkdir(M.root_dir, 'p') ~= 1 then
-        error('[File] Failed to create directory!', vim.log.levels.ERROR)
-    end
+	if vim.fn.mkdir(M.root_dir, 'p') ~= 1 then
+		error('[File] Failed to create directory!', vim.log.levels.ERROR)
+	end
 
 	return M.root_dir .. djb2(M.file_path) .. '.json'
 end

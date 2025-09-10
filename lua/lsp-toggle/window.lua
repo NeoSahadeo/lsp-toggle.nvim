@@ -24,6 +24,8 @@ function M.open_window()
 		return
 	end
 
+	local opts = require('lsp-toggle.config').options
+
 	utils.merge_table_pf()
 
 	local dynamic_height = 0
@@ -31,13 +33,15 @@ function M.open_window()
 		dynamic_height = dynamic_height + 1
 	end
 
-	dynamic_height = dynamic_height > 0 and dynamic_height or 1
+	if dynamic_height <= 0 or dynamic_height >= opts.max_height then
+		dynamic_height = 1
+	end
 
 	if #M.out_buf_table > 20 then
 		dynamic_height = 20
 	end
 
-	local f_width = 30
+	local f_width = opts.max_width
 	local f_height = dynamic_height
 	M.window_buf = vim.api.nvim_create_buf(false, true)
 	M.print_display(utils.clients)
@@ -48,10 +52,12 @@ function M.open_window()
 		relative = 'editor',
 		width = f_width,
 		height = f_height,
-		border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
+		border = opts.border,
 		col = math.floor((vim.o.columns - f_width) / 2),
 		row = math.floor((vim.o.lines - f_height) / 2),
 		style = 'minimal',
+		focusable = true,
+		zindex = 30,
 	})
 
 	local map_opts = { buffer = M.window_buf, noremap = true, silent = true }
