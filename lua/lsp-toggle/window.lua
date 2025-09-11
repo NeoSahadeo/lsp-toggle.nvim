@@ -15,7 +15,9 @@ function M.print_display(clients)
 
 	local safe_fn = vim.schedule_wrap(function()
 		vim.api.nvim_buf_set_lines(M.window_buf, 0, -1, false, M.out_buf_table)
+		vim.api.nvim_buf_set_option(M.window_buf, 'modifiable', false)
 	end)
+	vim.api.nvim_buf_set_option(M.window_buf, 'modifiable', true)
 	safe_fn()
 end
 
