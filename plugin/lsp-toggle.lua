@@ -16,6 +16,5 @@ end, {
 })
 
 vim.api.nvim_create_user_command('ToggleLSPClearCache', function()
-	vim.fn.delete(fileutils.root_dir, 'rf')
-	vim.notify('Cleared cache, you should probably restart nvim', vim.log.levels.WARN)
+	fileutils.clear_cache()
 end, { desc = 'Clear the local cache for lsp-toggle' })

@@ -1,6 +1,6 @@
 local M = {}
 
-M.root_dir = vim.fn.stdpath('cache') .. '/lsp-toggle/'
+M.root_dir = vim.fn.stdpath('cache') .. '/lsp-toggle'
 
 -- Set to empty string to avoid null
 M.file_path = ''
@@ -28,7 +28,7 @@ function M.produce_path()
 		error('[File] Failed to create directory!', vim.log.levels.ERROR)
 	end
 
-	return M.root_dir .. djb2(M.file_path) .. '.json'
+	return string.format('%s/%s.json', M.root_dir, djb2(M.file_path))
 end
 
 ---@param data table<string, { enabled: boolean, server_name: string }>
@@ -76,6 +76,40 @@ function M.load()
 	end
 
 	return vim.fn.json_decode(content)
+end
+
+---@param path? string
+function M.clear_cache(path)
+	path = path or M.root_dir
+
+	local stat = vim.uv.fs_stat(path)
+
+	if not stat or stat.type ~= 'directory' then
+		vim.notify('No cache to clear!', vim.log.levels.WARN)
+		return nil
+	end
+
+	local dir = vim.uv.fs_scandir(path)
+
+	while true do
+		---@type string?, 'directory'|'file'?
+		local item, item_type = vim.uv.fs_scandir_next(dir)
+
+		if not item then
+			break
+		end
+
+		item = path .. '/' .. item
+
+		if item_type == 'file' then
+			vim.uv.fs_unlink(item)
+		elseif item_type == 'directory' then
+			M.clear_cache(item)
+		end
+	end
+
+	vim.notify('Cleared cache, you should probably restart nvim', vim.log.levels.WARN)
+	return vim.uv.fs_rmdir(path)
 end
 
 return M
