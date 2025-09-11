@@ -25,6 +25,9 @@ return {
 
     ---@type string[]|'double'|'none'|'rounded'|'shadow'|'single'|'solid'
     border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
+
+    -- Enable/Disable caching
+    cache = true,
   },
 }
 ```
