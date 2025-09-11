@@ -67,3 +67,7 @@ To clear the cache, run:
 ```vim
 :ToggleLSPClearCache
 ```
+
+# Contributors
+
+- @[DrKJeff16](https://github.com/DrKJeff16) ** Contributor **
