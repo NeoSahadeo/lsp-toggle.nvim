@@ -17,6 +17,9 @@ local defaults = {
 
 	---@type string[]|'double'|'none'|'rounded'|'shadow'|'single'|'solid'
 	border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
+
+	-- Enable/Disable caching
+	cache = true,
 }
 
 ---@class LspToggleConfig
@@ -51,6 +54,10 @@ function M.setup_autocmds()
 			if vim.bo.buftype ~= '' then
 				return
 			end
+			local opts = require('lsp-toggle.config').options
+			if not opts.cache then
+				return
+			end
 
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(0))
 
@@ -65,6 +72,10 @@ function M.setup_autocmds()
 	vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
 		callback = function(args)
 			if vim.bo[args.buf].buftype ~= '' then
+				return
+			end
+			local opts = require('lsp-toggle.config').options
+			if not opts.cache then
 				return
 			end
 

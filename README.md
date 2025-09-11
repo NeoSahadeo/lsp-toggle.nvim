@@ -49,6 +49,9 @@ require('pckr').add({
 
       ---@type string[]|'double'|'none'|'rounded'|'shadow'|'single'|'solid'
       border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
+
+      -- Enable/Disable caching
+      cache = true,
     })
   end,
 })
@@ -70,4 +73,5 @@ To clear the cache, run:
 
 # Contributors
 
-- @[DrKJeff16](https://github.com/DrKJeff16) ** Contributor **
+- @[DrKJeff16](https://github.com/DrKJeff16) **Contributor**
+- @[NeoSahadeo](https://github.com/NeoSahadeo) **Maintainer *(Current owner)***

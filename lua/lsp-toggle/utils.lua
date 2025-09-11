@@ -22,8 +22,10 @@ function M.load_all_clients()
 end
 
 function M.merge_table_pf()
+	local opts = require('lsp-toggle.config').options
+
 	M.load_all_clients()
-	local file_clients = fileutils.load() or {} -- LSPAttach should set file path
+	local file_clients = opts.cache and fileutils.load() or {}
 	local excluded = require('lsp-toggle.config').options.exclude_lsp
 
 	-- merge tables with priority to file
