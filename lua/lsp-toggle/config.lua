@@ -46,6 +46,17 @@ function M.setup(opts)
 end
 
 function M.setup_autocmds()
+	local load_cache = function()
+		local opts = require('lsp-toggle.config').options
+		if not opts.cache then
+			return
+		end
+		utils.merge_table_pf() -- merge saved data before enabling/disabling clients
+		for _, tb_server in pairs(utils.clients) do
+			vim.lsp.enable(tb_server.server_name, tb_server.enabled)
+		end
+	end
+
 	local augroup = vim.api.nvim_create_augroup('lsp-toggle', { clear = false })
 
 	vim.api.nvim_create_autocmd('LspAttach', {
@@ -54,18 +65,9 @@ function M.setup_autocmds()
 			if vim.bo.buftype ~= '' then
 				return
 			end
-			local opts = require('lsp-toggle.config').options
-			if not opts.cache then
-				return
-			end
 
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(0))
-
-			-- Load contents of save file and toggle servers
-			utils.merge_table_pf()
-			for _, tb_server in pairs(utils.clients) do
-				vim.lsp.enable(tb_server.server_name, tb_server.enabled)
-			end
+			load_cache()
 		end,
 	})
 
@@ -74,17 +76,9 @@ function M.setup_autocmds()
 			if vim.bo[args.buf].buftype ~= '' then
 				return
 			end
-			local opts = require('lsp-toggle.config').options
-			if not opts.cache then
-				return
-			end
 
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
-
-			-- Direct toggle servers on buffer change
-			for _, tb_server in pairs(utils.clients) do
-				vim.lsp.enable(tb_server.server_name, tb_server.enabled)
-			end
+			load_cache()
 		end,
 	})
 
