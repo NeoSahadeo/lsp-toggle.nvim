@@ -53,7 +53,12 @@ function M.setup_autocmds()
 			end
 
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(0))
+
+			-- Load contents of save file and toggle servers
 			utils.merge_table_pf()
+			for _, tb_server in pairs(utils.clients) do
+				vim.lsp.enable(tb_server.server_name, tb_server.enabled)
+			end
 		end,
 	})
 
@@ -64,6 +69,11 @@ function M.setup_autocmds()
 			end
 
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
+
+			-- Direct toggle servers on buffer change
+			for _, tb_server in pairs(utils.clients) do
+				vim.lsp.enable(tb_server.server_name, tb_server.enabled)
+			end
 		end,
 	})
 
