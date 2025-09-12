@@ -108,7 +108,6 @@ function M.clear_cache(path)
 		end
 	end
 
-	vim.notify('Cleared cache, you should probably restart nvim', vim.log.levels.WARN)
 	return vim.uv.fs_rmdir(path)
 end
 
