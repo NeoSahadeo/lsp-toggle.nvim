@@ -1,3 +1,4 @@
 * @NeoSahadeo
-plugin/* @DrKJeff16
-lua/lsp-toggle/config.lua @DrKJeff16
+/.github/* @DrKJeff16
+/plugin/* @DrKJeff16
+/lua/lsp-toggle/config.lua @DrKJeff16
