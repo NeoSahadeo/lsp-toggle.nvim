@@ -3,14 +3,16 @@ local file = require('lsp-toggle.fileutils')
 local window = require('lsp-toggle.window')
 local utils = require('lsp-toggle.utils')
 
+---@class LspToggle.Toggle
 local M = {}
 
 function M.handle_toggle()
 	local opts = require('lsp-toggle.config').options
+	local win = window.window_id
+	local bufnr = window.window_buf
 
-	local cursor_pos = vim.api.nvim_win_get_cursor(0)
-	local cursor_line = cursor_pos[1]
-	local line_text = vim.api.nvim_buf_get_lines(0, cursor_line - 1, cursor_line, false)[1]
+	local cursor_line = vim.api.nvim_win_get_cursor(win)[1]
+	local line_text = vim.api.nvim_buf_get_lines(bufnr, cursor_line - 1, cursor_line, false)[1]
 
 	local server_name = line_text:sub(5)
 	for name, tb_server in pairs(utils.clients) do
