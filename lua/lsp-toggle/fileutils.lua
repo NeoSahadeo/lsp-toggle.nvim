@@ -8,6 +8,12 @@ M.file_path = ''
 ---@param str string
 ---@return string hash
 local function djb2(str)
+	if vim.fn.has('nvim-0.11') == 1 then
+		vim.validate('str', str, 'string', false)
+	else
+		vim.validate({ str = { str, 'string' } })
+	end
+
 	local hash = 5381
 	for i = 1, str:len() do
 		local c = str:byte(i)
@@ -19,6 +25,12 @@ end
 
 ---@param path string
 function M.set_file_path(path)
+	if vim.fn.has('nvim-0.11') == 1 then
+		vim.validate('path', path, 'string', false)
+	else
+		vim.validate({ path = { path, 'string' } })
+	end
+
 	M.file_path = path
 end
 
@@ -34,6 +46,11 @@ end
 ---@param data table<string, { enabled: boolean, server_name: string }>
 ---@return boolean|nil
 function M.save(data)
+	if vim.fn.has('nvim-0.11') == 1 then
+		vim.validate('data', data, 'table', false, 'table<string, LspToggleUtils.Client>')
+	else
+		vim.validate({ data = { data, 'table' } })
+	end
 	local path = M.produce_path()
 
 	if not path then
@@ -80,6 +97,11 @@ end
 
 ---@param path? string
 function M.clear_cache(path)
+	if vim.fn.has('nvim-0.11') == 1 then
+		vim.validate('path', path, 'string', true)
+	else
+		vim.validate({ path = { path, { 'string', 'nil' } } })
+	end
 	path = path or M.root_dir
 
 	local stat = vim.uv.fs_stat(path)

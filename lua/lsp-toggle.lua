@@ -5,6 +5,11 @@ local M = {}
 
 ---@param opts? LspToggle.Opts
 function M.setup(opts)
+	if vim.fn.has('nvim-0.11') == 1 then
+		vim.validate('opts', opts, 'table', true, 'LspToggle.Opts?')
+	else
+		vim.validate({ opts = { opts, { 'table', 'nil' } } })
+	end
 	config.setup(opts or {})
 end
 
