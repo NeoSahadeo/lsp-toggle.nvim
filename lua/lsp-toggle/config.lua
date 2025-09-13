@@ -39,52 +39,47 @@ function M.setup(opts)
 
 	M.options = vim.tbl_deep_extend('keep', opts, defaults)
 
-	if M.options.max_height <= 0 then
+	if not M.options.max_height or M.options.max_height <= 0 then
 		M.options.max_height = defaults.max_height
 	end
 
-	if M.options.max_width <= 0 then
+	if not M.options.max_width or M.options.max_width <= 0 then
 		M.options.max_width = defaults.max_width
 	end
 
 	M.setup_autocmds()
 end
 
-function M.setup_autocmds()
-	local load_cache = function()
-		local opts = require('lsp-toggle.config').options
-		if not opts.cache then
-			return
-		end
-		utils.merge_table_pf() -- merge saved data before enabling/disabling clients
-		for _, tb_server in pairs(utils.clients) do
-			vim.lsp.enable(tb_server.server_name, tb_server.enabled)
-		end
+function M.load_cache()
+	if not M.options.cache then
+		return
+	end
+	utils.merge_table_pf() -- merge saved data before enabling/disabling clients
+	for _, tb_server in pairs(utils.clients) do
+		vim.lsp.enable(tb_server.server_name, tb_server.enabled)
+	end
+end
+
+---@param args vim.api.keyset.create_autocmd.callback_args
+local function callback(args)
+	if vim.bo[args.buf].buftype ~= '' then
+		return
 	end
 
-	local augroup = vim.api.nvim_create_augroup('lsp-toggle', { clear = false })
+	fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
+	M.load_cache()
+end
+
+function M.setup_autocmds()
+	local augroup = vim.api.nvim_create_augroup('lsp-toggle', { clear = true })
 
 	vim.api.nvim_create_autocmd('LspAttach', {
 		group = augroup,
-		callback = function()
-			if vim.bo.buftype ~= '' then
-				return
-			end
-
-			fileutils.set_file_path(vim.api.nvim_buf_get_name(0))
-			load_cache()
-		end,
+		callback = callback,
 	})
 
 	vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
-		callback = function(args)
-			if vim.bo[args.buf].buftype ~= '' then
-				return
-			end
-
-			fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
-			load_cache()
-		end,
+		callback = callback,
 	})
 
 	vim.api.nvim_create_autocmd('BufLeave', {

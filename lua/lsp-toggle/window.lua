@@ -1,9 +1,11 @@
 local utils = require('lsp-toggle.utils')
 
 local M = {}
+
+---@type string[]
 M.out_buf_table = {}
 
----@param clients table<string, { enabled: boolean, server_name: string }>
+---@param clients table<string, LspToggleUtils.Client>
 function M.print_display(clients)
 	M.out_buf_table = {}
 	for _, tb_server in pairs(clients) do
@@ -71,10 +73,12 @@ function M.open_window()
 end
 
 function M.close_window()
-	if M.window_id then
-		vim.api.nvim_win_close(M.window_id, true)
-		M.window_id = nil
+	if not M.window_id then
+		return
 	end
+
+	vim.api.nvim_win_close(M.window_id, true)
+	M.window_id = nil
 end
 
 return M

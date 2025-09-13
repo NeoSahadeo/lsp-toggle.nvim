@@ -43,7 +43,7 @@ function M.produce_path()
 	return string.format('%s/%s.json', M.root_dir, djb2(M.file_path))
 end
 
----@param data table<string, { enabled: boolean, server_name: string }>
+---@param data table<string, LspToggleUtils.Client>
 ---@return boolean|nil
 function M.save(data)
 	if vim.fn.has('nvim-0.11') == 1 then
@@ -67,7 +67,7 @@ function M.save(data)
 	return true
 end
 
----@return table<string, { enabled: boolean, server_name: string }>|nil
+---@return table<string, LspToggleUtils.Client>|nil
 function M.load()
 	-- returns lspClients
 	local path = M.produce_path()
