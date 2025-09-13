@@ -1,3 +1,4 @@
+---@class LspToggleFileUtils
 local M = {}
 
 M.root_dir = vim.fn.stdpath('cache') .. '/lsp-toggle'
@@ -96,6 +97,7 @@ function M.load()
 end
 
 ---@param path? string
+---@return boolean? result
 function M.clear_cache(path)
 	if vim.fn.has('nvim-0.11') == 1 then
 		vim.validate('path', path, 'string', true)
@@ -130,7 +132,8 @@ function M.clear_cache(path)
 		end
 	end
 
-	return vim.uv.fs_rmdir(path)
+	local result = vim.uv.fs_rmdir(path)
+	return result
 end
 
 return M

@@ -5,9 +5,11 @@ local utils = require('lsp-toggle.utils')
 ---@class LspToggle.Opts
 local defaults = {
 	--- If less than `1`, this will revert back to `20`
+	---@type integer
 	max_height = 20,
 
 	--- If less than `1`, this will revert back to `30`
+	---@type integer
 	max_width = 30,
 
 	--- A list of LSP server names to exclude,
@@ -18,11 +20,12 @@ local defaults = {
 	---@type string[]|'double'|'none'|'rounded'|'shadow'|'single'|'solid'
 	border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
 
-	-- Enable/Disable caching
+	--- Enable/Disable caching
+	---@type boolean
 	cache = true,
 }
 
----@class LspToggleConfig
+---@class LspToggle.Config
 local M = {}
 
 ---@type LspToggle.Opts

@@ -1,5 +1,6 @@
 local utils = require('lsp-toggle.utils')
 
+---@class LspToggle.Window
 local M = {}
 
 ---@type string[]

@@ -4,6 +4,7 @@ local fileutils = require('lsp-toggle.fileutils')
 ---@field enabled boolean
 ---@field server_name string
 
+---@class LspToggleUtils
 local M = {}
 
 ---@type table<string, LspToggleUtils.Client>
