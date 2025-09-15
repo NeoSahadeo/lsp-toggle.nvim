@@ -81,7 +81,8 @@ function M.setup_autocmds()
 		callback = callback,
 	})
 
-	vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
+	vim.api.nvim_create_autocmd('BufEnter', {
+		group = augroup,
 		callback = callback,
 	})
 
