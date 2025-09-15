@@ -37,8 +37,11 @@ end
 
 ---@return string
 function M.produce_path()
-	if vim.fn.mkdir(M.root_dir, 'p') ~= 1 then
-		error('[FILE] Failed to create directory!', vim.log.levels.ERROR)
+	if not vim.fn.isdirectory(M.root_dir) then
+		local dir_fd = vim.uv.fs_mkdir(M.root_dir, tonumber('755', 8))
+		if not dir_fd then
+			error('[FILE] Failed to create directory!', vim.log.levels.ERROR)
+		end
 	end
 
 	return string.format('%s/%s.json', M.root_dir, djb2(M.file_path))
