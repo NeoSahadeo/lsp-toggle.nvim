@@ -1,3 +1,4 @@
+---@class LspToggleFileUtils
 local M = {}
 
 M.root_dir = vim.fn.stdpath('cache') .. '/lsp-toggle'
@@ -8,6 +9,12 @@ M.file_path = ''
 ---@param str string
 ---@return string hash
 local function djb2(str)
+	if vim.fn.has('nvim-0.11') == 1 then
+		vim.validate('str', str, 'string', false)
+	else
+		vim.validate({ str = { str, 'string' } })
+	end
+
 	local hash = 5381
 	for i = 1, str:len() do
 		local c = str:byte(i)
@@ -17,47 +24,53 @@ local function djb2(str)
 	return tostring(hash)
 end
 
----@param path string
+---@param path? string
 function M.set_file_path(path)
-	M.file_path = path
+	if vim.fn.has('nvim-0.11') == 1 then
+		vim.validate('path', path, 'string', true)
+	else
+		vim.validate({ path = { path, { 'string', 'nil' } } })
+	end
+
+	M.file_path = path or M.file_path
 end
 
 ---@return string
 function M.produce_path()
-	if vim.fn.mkdir(M.root_dir, 'p') ~= 1 then
-		error('[File] Failed to create directory!', vim.log.levels.ERROR)
+	if not vim.fn.isdirectory(M.root_dir) then
+		local dir_fd = vim.uv.fs_mkdir(M.root_dir, tonumber('755', 8))
+		if not dir_fd then
+			error('[FILE] Failed to create directory!', vim.log.levels.ERROR)
+		end
 	end
 
 	return string.format('%s/%s.json', M.root_dir, djb2(M.file_path))
 end
 
----@param data table<string, { enabled: boolean, server_name: string }>
+---@param data table<string, LspToggleUtils.Client>
 ---@return boolean|nil
 function M.save(data)
-	local path = M.produce_path()
-
-	if not path then
-		return nil
+	if vim.fn.has('nvim-0.11') == 1 then
+		vim.validate('data', data, 'table', false, 'table<string, LspToggleUtils.Client>')
+	else
+		vim.validate({ data = { data, 'table' } })
 	end
+	local path = M.produce_path()
 
 	local fd = vim.uv.fs_open(path, 'w', tonumber('644', 8))
 	if not fd then
 		return nil
 	end
 
-	vim.uv.fs_write(fd, vim.fn.json_encode(data))
+	vim.uv.fs_write(fd, vim.fn.json_encode(data), -1)
 	vim.uv.fs_close(fd)
 	return true
 end
 
----@return table<string, { enabled: boolean, server_name: string }>|nil
+---@return table<string, LspToggleUtils.Client>|nil
 function M.load()
 	-- returns lspClients
 	local path = M.produce_path()
-	if not path then
-		return nil
-	end
-
 	local stat = vim.uv.fs_stat(path)
 	if not stat then
 		return nil
@@ -69,7 +82,7 @@ function M.load()
 		return nil
 	end
 
-	local content = vim.uv.fs_read(fd, stat.size)
+	local content = vim.uv.fs_read(fd, stat.size, -1)
 	vim.uv.fs_close(fd)
 	if not content then
 		return nil
@@ -79,19 +92,31 @@ function M.load()
 end
 
 ---@param path? string
+---@return boolean? result
 function M.clear_cache(path)
+	if vim.fn.has('nvim-0.11') == 1 then
+		vim.validate('path', path, 'string', true)
+	else
+		vim.validate({ path = { path, { 'string', 'nil' } } })
+	end
 	path = path or M.root_dir
 
 	local stat = vim.uv.fs_stat(path)
 
 	if not stat or stat.type ~= 'directory' then
-		vim.notify('No cache to clear!', vim.log.levels.WARN)
+		vim.notify('[FILE] No cache to clear!', vim.log.levels.WARN)
 		return nil
 	end
 
 	local dir = vim.uv.fs_scandir(path)
+	if not dir then
+		vim.notify('[FILE] Unable to scan directory!', vim.log.levels.ERROR)
+		return nil
+	end
 
-	while true do
+	local success = true
+
+	while success do
 		---@type string?, 'directory'|'file'?
 		local item, item_type = vim.uv.fs_scandir_next(dir)
 
@@ -102,13 +127,12 @@ function M.clear_cache(path)
 		item = path .. '/' .. item
 
 		if item_type == 'file' then
-			vim.uv.fs_unlink(item)
-		elseif item_type == 'directory' then
-			M.clear_cache(item)
+			success = vim.uv.fs_unlink(item)
 		end
 	end
 
-	return vim.uv.fs_rmdir(path)
+	success = vim.uv.fs_rmdir(path)
+	return success
 end
 
 return M
