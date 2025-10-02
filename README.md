@@ -34,6 +34,14 @@ return {
 
     -- Enable/Disable caching
     cache = true,
+
+    -- File type caching or file name caching
+    -- Uses the file type instead of file name width caches.
+    -- e.g.
+    -- all typescript files (File type)
+    -- specific files (File name)
+    ---@type string|"file_type"|"file_name"
+    cache_type = 'file_type',
   },
 }
 ```
@@ -61,6 +69,14 @@ require('pckr').add({
 
       -- Enable/Disable caching
       cache = true,
+
+      -- File type caching or file name caching
+      -- Uses the file type instead of file name width caches.
+      -- e.g.
+      -- all typescript files (File type)
+      -- specific files (File name)
+      ---@type string|"file_type"|"file_name"
+      cache_type = 'file_type',
     })
   end,
 })
