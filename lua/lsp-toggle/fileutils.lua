@@ -118,3 +118,5 @@ function M.clear_cache(path)
 end
 
 return M
+
+-- vim:ts=4:sts=4:sw=0:noet:ai:si:sta:
