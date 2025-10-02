@@ -21,6 +21,8 @@ function M.print_display(clients)
 	safe_fn()
 end
 
+-- BUG: Buffer is not flushed 'when switching buffers'
+-- using ctrl+o. Will investigate
 function M.open_window()
 	if M.window_id then
 		return
