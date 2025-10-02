@@ -86,6 +86,7 @@ function M.setup_autocmds()
 				return
 			end
 
+			fileutils.file_type = vim.bo.filetype
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
 			load_cache()
 		end,
