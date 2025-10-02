@@ -2,8 +2,11 @@ local M = {}
 
 M.root_dir = vim.fn.stdpath('cache') .. '/lsp-toggle'
 
+-- INFO: The file path and file type is set in
+-- the auto commands in config.lua
 -- Set to empty string to avoid null
 M.file_path = ''
+M.file_type = ''
 
 ---@param str string
 ---@return string hash
@@ -28,7 +31,10 @@ function M.produce_path()
 		error('[File] Failed to create directory!', vim.log.levels.ERROR)
 	end
 
-	return string.format('%s/%s.json', M.root_dir, djb2(M.file_path))
+	local opts = require('lsp-toggle.config').options
+
+	local file_name = opts.cache_type == 'file_type' and M.file_type or djb2(M.file_path)
+	return string.format('%s/%s.json', M.root_dir, file_name)
 end
 
 ---@param data table<string, { enabled: boolean, server_name: string }>
