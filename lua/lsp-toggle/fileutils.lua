@@ -94,28 +94,28 @@ function M.load()
 	return vim.fn.json_decode(content)
 end
 
----@param path? string
-function M.clear_cache(path)
-	path = path or M.root_dir
+---@param dir? string
+function M.clear_cache(dir)
+	dir = dir or M.root_dir
 
-	local stat = vim.uv.fs_stat(path)
+	local stat = vim.uv.fs_stat(dir)
 
 	if not stat or stat.type ~= 'directory' then
 		vim.notify('No cache to clear!', vim.log.levels.WARN)
 		return
 	end
 
-	local dir = vim.uv.fs_scandir(path)
+	local dir_scan = vim.uv.fs_scandir(dir)
 
 	while true do
-		---@type string?, 'directory'|'file'?
-		local item, item_type = vim.uv.fs_scandir_next(dir)
+		---@type string?, 'directory'|'file'|string?
+		local item, item_type = vim.uv.fs_scandir_next(dir_scan)
 
 		if not item then
 			break
 		end
 
-		item = path .. '/' .. item
+		item = dir .. '/' .. item
 
 		if item_type == 'file' then
 			vim.uv.fs_unlink(item)
@@ -124,7 +124,7 @@ function M.clear_cache(path)
 		end
 	end
 
-	return vim.uv.fs_rmdir(path)
+	return vim.uv.fs_rmdir(dir)
 end
 
 return M
