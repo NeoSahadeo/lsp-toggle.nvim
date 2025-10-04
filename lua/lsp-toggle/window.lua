@@ -1,11 +1,15 @@
 local utils = require('lsp-toggle.utils')
 
 local M = {}
+
+---@type string[]
 M.out_buf_table = {}
 
 ---@param clients table<string, { enabled: boolean, server_name: string }>
 function M.print_display(clients)
 	M.out_buf_table = {}
+
+	-- NOTE: Using `#clients` is not reliable because `clients` is not list-like
 	for _, tb_server in pairs(clients) do
 		table.insert(
 			M.out_buf_table,
@@ -28,16 +32,14 @@ function M.open_window()
 		return
 	end
 
-	local opts = require('lsp-toggle.config').options
-
 	utils.merge_table_pf()
-
 	local dynamic_height = 0
 	for _, _ in pairs(utils.clients) do
-		dynamic_height = dynamic_height + 1
+		dynamic_height = dynamic_height + 1 ---@type integer
 	end
 
-	if dynamic_height <= 0 or dynamic_height >= opts.max_height then
+	local opts = require('lsp-toggle.config').options
+	if dynamic_height < 1 or dynamic_height > opts.max_height then
 		dynamic_height = 1
 	end
 
