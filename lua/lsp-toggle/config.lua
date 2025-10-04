@@ -59,35 +59,37 @@ function M.setup(opts)
 	M.setup_autocmds()
 end
 
-function M.setup_autocmds()
-	local setup_lsps = function()
-		fileutils.file_type = vim.bo.filetype
-		utils.merge_table_pf() -- merge saved data before enabling/disabling clients
-		for _, tb_server in pairs(utils.clients) do
-			vim.lsp.enable(tb_server.server_name, tb_server.enabled)
-		end
+---@param bufnr integer
+function M.setup_lsps(bufnr)
+	fileutils.file_type = vim.bo[bufnr].filetype
+	utils.merge_table_pf() -- merge saved data before enabling/disabling clients
+	for _, tb_server in pairs(utils.clients) do
+		vim.lsp.enable(tb_server.server_name, tb_server.enabled)
 	end
+end
 
-	local augroup = vim.api.nvim_create_augroup('lsp-toggle', { clear = false })
+function M.setup_autocmds()
+	local augroup = vim.api.nvim_create_augroup('lsp-toggle', { clear = true })
 
 	vim.api.nvim_create_autocmd('LspAttach', {
 		group = augroup,
-		callback = function()
-			if vim.bo.buftype ~= '' then
-				return
-			end
-			fileutils.set_file_path(vim.api.nvim_buf_get_name(0))
-			setup_lsps()
-		end,
-	})
-
-	vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
 		callback = function(args)
 			if vim.bo[args.buf].buftype ~= '' then
 				return
 			end
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
-			setup_lsps()
+			M.setup_lsps(args.buf)
+		end,
+	})
+
+	vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
+		group = augroup,
+		callback = function(args)
+			if vim.bo[args.buf].buftype ~= '' then
+				return
+			end
+			fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
+			M.setup_lsps(args.buf)
 		end,
 	})
 
