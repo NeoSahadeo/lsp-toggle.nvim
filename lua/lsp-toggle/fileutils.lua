@@ -23,12 +23,12 @@ end
 ---@param path string
 function M.set_file_path(path)
 	if vim.fn.has('nvim-0.11') == 1 then
-		vim.validate('path', path, 'string', true)
+		vim.validate('path', path, 'string', false)
 	else
-		vim.validate({ path = { path, { 'string', 'nil' } } })
+		vim.validate({ path = { path, 'string' } })
 	end
 
-	M.file_path = path or M.file_path
+	M.file_path = path
 end
 
 ---@return string
