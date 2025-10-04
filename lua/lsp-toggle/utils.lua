@@ -10,14 +10,11 @@ function M.load_all_clients()
 	local excluded = require('lsp-toggle.config').options.exclude_lsp
 
 	for _, client in ipairs(clients) do
-		if not vim.tbl_contains(excluded, client.name) then
-			M.clients[client.name] = {
+		M.clients[client.name] = vim.list_contains(excluded, client.name) and nil
+			or {
 				enabled = vim.lsp.is_enabled(client.name),
 				server_name = client.name,
 			}
-		else
-			M.clients[client.name] = nil
-		end
 	end
 end
 
@@ -36,20 +33,17 @@ function M.merge_table_pf()
 			client.enabled = false
 		end
 
-		if vim.tbl_contains(excluded, name) then
-			goto continue
-		end
-
-		for fname, fclient in pairs(file_clients) do
-			if fname == name then
-				M.clients[fname] = fclient
-				added = true
+		if not vim.tbl_contains(excluded, name) then
+			for fname, fclient in pairs(file_clients) do
+				if fname == name then
+					M.clients[fname] = fclient
+					added = true
+				end
+			end
+			if not added then
+				M.clients[name] = client
 			end
 		end
-		if not added then
-			M.clients[name] = client
-		end
-		::continue::
 	end
 end
 
