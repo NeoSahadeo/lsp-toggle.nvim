@@ -71,24 +71,24 @@ function M.load()
 	-- returns lspClients
 	local path = M.produce_path()
 	if not path then
-		return nil
+		return
 	end
 
 	local stat = vim.uv.fs_stat(path)
 	if not stat then
-		return nil
+		return
 	end
 
 	local fd = vim.uv.fs_open(path, 'r', tonumber('644', 8))
-
 	if not fd then
-		return nil
+		return
 	end
 
 	local content = vim.uv.fs_read(fd, stat.size)
 	vim.uv.fs_close(fd)
+
 	if not content then
-		return nil
+		return
 	end
 
 	return vim.fn.json_decode(content)
@@ -102,7 +102,7 @@ function M.clear_cache(path)
 
 	if not stat or stat.type ~= 'directory' then
 		vim.notify('No cache to clear!', vim.log.levels.WARN)
-		return nil
+		return
 	end
 
 	local dir = vim.uv.fs_scandir(path)
