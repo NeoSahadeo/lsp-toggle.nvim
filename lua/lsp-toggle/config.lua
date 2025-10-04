@@ -19,6 +19,7 @@ local defaults = {
 	border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
 
 	-- Enable/Disable caching
+	---@type boolean
 	cache = true,
 
 	-- File type caching or file name caching
@@ -28,6 +29,11 @@ local defaults = {
 	-- specific files (File name)
 	---@type string|"file_type"|"file_name"
 	cache_type = 'file_type',
+
+	--- Load LSPs by default regardless of cache
+	--- if enabled, no LSPs will be loaded by default
+	---@type boolean
+	exclusive_mode = false,
 }
 
 ---@class LspToggleConfig
@@ -54,11 +60,7 @@ function M.setup(opts)
 end
 
 function M.setup_autocmds()
-	local load_cache = function()
-		local opts = require('lsp-toggle.config').options
-		if not opts.cache then
-			return
-		end
+	local setup_lsps = function()
 		utils.merge_table_pf() -- merge saved data before enabling/disabling clients
 		for _, tb_server in pairs(utils.clients) do
 			vim.lsp.enable(tb_server.server_name, tb_server.enabled)
@@ -74,9 +76,8 @@ function M.setup_autocmds()
 				return
 			end
 
-			fileutils.file_type = vim.bo.filetype
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(0))
-			load_cache()
+			setup_lsps()
 		end,
 	})
 
@@ -88,7 +89,7 @@ function M.setup_autocmds()
 
 			fileutils.file_type = vim.bo.filetype
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
-			load_cache()
+			setup_lsps()
 		end,
 	})
 

@@ -31,17 +31,25 @@ function M.merge_table_pf()
 	-- merge tables with priority to file
 	for name, client in pairs(M.clients) do
 		local added = false
-		if not vim.tbl_contains(excluded, name) then
-			for fname, fclient in pairs(file_clients) do
-				if fname == name then
-					M.clients[fname] = fclient
-					added = true
-				end
-			end
-			if not added then
-				M.clients[name] = client
+
+		if opts.exclusive_mode then
+			client.enabled = false
+		end
+
+		if vim.tbl_contains(excluded, name) then
+			goto continue
+		end
+
+		for fname, fclient in pairs(file_clients) do
+			if fname == name then
+				M.clients[fname] = fclient
+				added = true
 			end
 		end
+		if not added then
+			M.clients[name] = client
+		end
+		::continue::
 	end
 end
 

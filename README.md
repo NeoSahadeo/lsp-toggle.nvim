@@ -33,6 +33,7 @@ return {
     border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
 
     -- Enable/Disable caching
+    ---@type boolean
     cache = true,
 
     -- File type caching or file name caching
@@ -42,6 +43,11 @@ return {
     -- specific files (File name)
     ---@type string|"file_type"|"file_name"
     cache_type = 'file_type',
+
+    --- Load LSPs by default regardless of cache
+    --- if enabled, no LSPs will be loaded by default
+    ---@type boolean
+    exclusive_mode = false,
   },
 }
 ```
@@ -68,6 +74,7 @@ require('pckr').add({
       border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
 
       -- Enable/Disable caching
+      ---@type boolean
       cache = true,
 
       -- File type caching or file name caching
@@ -77,6 +84,11 @@ require('pckr').add({
       -- specific files (File name)
       ---@type string|"file_type"|"file_name"
       cache_type = 'file_type',
+
+      --- Load LSPs by default regardless of cache
+      --- if enabled, no LSPs will be loaded by default
+      ---@type boolean
+      exclusive_mode = false,
     })
   end,
 })
