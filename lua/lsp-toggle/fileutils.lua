@@ -40,21 +40,25 @@ function M.produce_path()
 	local opts = require('lsp-toggle.config').options
 
 	local file_name = opts.cache_type == 'file_type' and M.file_type or djb2(M.file_path)
-	return string.format('%s/%s.json', M.root_dir, file_name)
+	return ('%s/%s.json'):format(M.root_dir, file_name)
 end
 
 ---@param data table<string, { enabled: boolean, server_name: string }>
----@return boolean|nil
+---@return boolean
 function M.save(data)
 	local path = M.produce_path()
+	if not path or path == '' then
+		return false
+	end
 
-	if not path then
-		return nil
+	local stat = vim.uv.fs_stat(path)
+	if not stat or stat.type ~= 'file' then
+		return false
 	end
 
 	local fd = vim.uv.fs_open(path, 'w', tonumber('644', 8))
 	if not fd then
-		return nil
+		return false
 	end
 
 	vim.uv.fs_write(fd, vim.fn.json_encode(data))

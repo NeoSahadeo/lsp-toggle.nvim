@@ -6,8 +6,6 @@ local utils = require('lsp-toggle.utils')
 local M = {}
 
 function M.handle_toggle()
-	local opts = require('lsp-toggle.config').options
-
 	local cursor_pos = vim.api.nvim_win_get_cursor(0)
 	local cursor_line = cursor_pos[1]
 	local line_text = vim.api.nvim_buf_get_lines(0, cursor_line - 1, cursor_line, false)[1]
@@ -22,8 +20,12 @@ function M.handle_toggle()
 	end
 
 	window.print_display(utils.clients)
-	if opts.cache then
-		file.save(utils.clients)
+	if not require('lsp-toggle.config').options.cache then
+		return
+	end
+
+	if not file.save(utils.clients) then
+		vim.notify('[FILE] Failed to save cache!', vim.log.levels.WARN)
 	end
 end
 
