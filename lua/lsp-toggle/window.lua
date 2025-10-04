@@ -25,8 +25,6 @@ function M.print_display(clients)
 	safe_fn()
 end
 
--- BUG: Buffer is not flushed 'when switching buffers'
--- using ctrl+o. Will investigate
 function M.open_window()
 	if M.window_id then
 		return
@@ -72,6 +70,20 @@ function M.open_window()
 
 	--- WARN: Leave the `require('lsp-toggle.toggle')...` as is, or it'll break!
 	vim.keymap.set('n', '<CR>', require('lsp-toggle.toggle').handle_toggle, map_opts)
+
+	--- Flush the buffer on `BufLeave`
+	vim.api.nvim_create_autocmd('BufLeave', {
+		--- WARN: DON'T CLEAR THE AUGROUP!
+		group = vim.api.nvim_create_augroup('lsp-toggle', { clear = false }),
+		callback = function(args)
+			if not (M.window_buf and vim.api.nvim_buf_is_valid(M.window_buf)) then
+				return
+			end
+			if args.buf ~= M.window_buf then
+				M.close_window()
+			end
+		end,
+	})
 end
 
 function M.close_window()
