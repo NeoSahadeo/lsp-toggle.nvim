@@ -51,15 +51,13 @@ M.options = {}
 
 ---@param opts? LspToggle.Opts
 function M.setup(opts)
-	opts = opts or {}
+	M.options = vim.tbl_deep_extend('keep', opts or {}, defaults)
 
-	M.options = vim.tbl_deep_extend('keep', opts, defaults)
-
-	if M.options.max_height <= 0 then
+	if M.options.max_height < 1 then
 		M.options.max_height = defaults.max_height
 	end
 
-	if M.options.max_width <= 0 then
+	if M.options.max_width < 1 then
 		M.options.max_width = defaults.max_width
 	end
 
