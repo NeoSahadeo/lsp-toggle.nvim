@@ -19,19 +19,26 @@ local defaults = {
 	border = { '╔', '-', '╗', '║', '╝', '═', '╚', '║' },
 
 	-- Enable/Disable caching
+	--
+	-- Enabled by default
 	---@type boolean
 	cache = true,
 
 	-- File type caching or file name caching
 	-- Uses the file type instead of file name width caches.
-	-- e.g.
-	-- all typescript files (File type)
-	-- specific files (File name)
-	---@type string|"file_type"|"file_name"
+	--
+	-- For example:
+	-- - all typescript files `'file_type'`
+	-- - specific files `'file_name'`
+	--
+	-- Set to `'file_type'` by default
+	---@type 'file_type'|'file_name'
 	cache_type = 'file_type',
 
 	--- Load LSPs by default regardless of cache
 	--- if enabled, no LSPs will be loaded by default
+	---
+	--- This is disabled by default
 	---@type boolean
 	exclusive_mode = false,
 }
