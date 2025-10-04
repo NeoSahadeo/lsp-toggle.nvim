@@ -61,6 +61,7 @@ end
 
 function M.setup_autocmds()
 	local setup_lsps = function()
+		fileutils.file_type = vim.bo.filetype
 		utils.merge_table_pf() -- merge saved data before enabling/disabling clients
 		for _, tb_server in pairs(utils.clients) do
 			vim.lsp.enable(tb_server.server_name, tb_server.enabled)
@@ -75,7 +76,6 @@ function M.setup_autocmds()
 			if vim.bo.buftype ~= '' then
 				return
 			end
-
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(0))
 			setup_lsps()
 		end,
@@ -86,8 +86,6 @@ function M.setup_autocmds()
 			if vim.bo[args.buf].buftype ~= '' then
 				return
 			end
-
-			fileutils.file_type = vim.bo.filetype
 			fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
 			setup_lsps()
 		end,
