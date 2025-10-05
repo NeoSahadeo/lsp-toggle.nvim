@@ -1,8 +1,13 @@
+---@class lsp_toggle.tb_server
+---@field enabled boolean
+---@field server_name string
+---@field is_attached fun(): boolean
+
 local fileutils = require('lsp-toggle.fileutils')
 
 local M = {}
 
----@type table<string, { enabled: boolean, server_name: string }>
+---@type table<string, lsp_toggle.tb_server>
 M.clients = {}
 
 function M.load_all_clients()
@@ -14,6 +19,15 @@ function M.load_all_clients()
 			M.clients[client.name] = {
 				enabled = vim.lsp.is_enabled(client.name),
 				server_name = client.name,
+				is_attached = function()
+					-- NOTE: Using `pairs()` because it is not a list, strictly
+					for _, v in pairs(client.attached_buffers) do
+						if v then
+							return true
+						end
+					end
+					return false
+				end,
 			}
 		else
 			M.clients[client.name] = nil

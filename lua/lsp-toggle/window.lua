@@ -5,16 +5,18 @@ local M = {}
 ---@type string[]
 M.out_buf_table = {}
 
----@param clients table<string, { enabled: boolean, server_name: string }>
+---@param clients table<string, lsp_toggle.tb_server>
 function M.print_display(clients)
 	M.out_buf_table = {}
 
 	-- NOTE: Using `#clients` is not reliable because `clients` is not list-like
 	for _, tb_server in pairs(clients) do
-		table.insert(
-			M.out_buf_table,
-			(tb_server.enabled and '[x] ' or '[ ] ') .. tb_server.server_name
-		)
+		if tb_server.is_attached() then
+			table.insert(
+				M.out_buf_table,
+				(tb_server.enabled and '[x] ' or '[ ] ') .. tb_server.server_name
+			)
+		end
 	end
 
 	local safe_fn = vim.schedule_wrap(function()
