@@ -43,7 +43,7 @@ function M.produce_path()
 	return string.format('%s/%s.json', M.root_dir, file_name)
 end
 
----@param data table<string, { enabled: boolean, server_name: string }>
+---@param data table<string, lsp_toggle.tb_server>
 ---@return boolean|nil
 function M.save(data)
 	local path = M.produce_path()
@@ -62,7 +62,7 @@ function M.save(data)
 	return true
 end
 
----@return table<string, { enabled: boolean, server_name: string }>|nil
+---@return table<string, lsp_toggle.tb_server>|nil
 function M.load()
 	-- returns lspClients
 	local path = M.produce_path()

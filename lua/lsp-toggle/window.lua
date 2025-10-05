@@ -5,16 +5,18 @@ local M = {}
 ---@type string[]
 M.out_buf_table = {}
 
----@param clients table<string, { enabled: boolean, server_name: string }>
+---@param clients table<string, lsp_toggle.tb_server>
 function M.print_display(clients)
 	M.out_buf_table = {}
 
 	-- NOTE: Using `#clients` is not reliable because `clients` is not list-like
 	for _, tb_server in pairs(clients) do
-		table.insert(
-			M.out_buf_table,
-			(tb_server.enabled and '[x] ' or '[ ] ') .. tb_server.server_name
-		)
+		if tb_server.is_attached() then
+			table.insert(
+				M.out_buf_table,
+				(tb_server.enabled and '[x] ' or '[ ] ') .. tb_server.server_name
+			)
+		end
 	end
 
 	local safe_fn = vim.schedule_wrap(function()
@@ -25,8 +27,6 @@ function M.print_display(clients)
 	safe_fn()
 end
 
--- BUG: Buffer is not flushed 'when switching buffers'
--- using ctrl+o. Will investigate
 function M.open_window()
 	if M.window_id then
 		return
@@ -72,6 +72,20 @@ function M.open_window()
 
 	--- WARN: Leave the `require('lsp-toggle.toggle')...` as is, or it'll break!
 	vim.keymap.set('n', '<CR>', require('lsp-toggle.toggle').handle_toggle, map_opts)
+
+	--- Flush the buffer on `BufLeave`
+	vim.api.nvim_create_autocmd('BufLeave', {
+		--- WARN: DON'T CLEAR THE AUGROUP!
+		group = vim.api.nvim_create_augroup('lsp-toggle', { clear = false }),
+		callback = function(args)
+			if not (M.window_buf and vim.api.nvim_buf_is_valid(M.window_buf)) then
+				return
+			end
+			if args.buf ~= M.window_buf then
+				M.close_window()
+			end
+		end,
+	})
 end
 
 function M.close_window()
