@@ -37,7 +37,7 @@ return {
     cache = true,
 
     -- File type caching or file name caching
-    -- Uses the file type instead of file name width caches.
+    -- Uses the file type instead of file name with caches.
     -- e.g.
     -- all typescript files (File type)
     -- specific files (File name)
@@ -78,7 +78,7 @@ require('pckr').add({
       cache = true,
 
       -- File type caching or file name caching
-      -- Uses the file type instead of file name width caches.
+      -- Uses the file type instead of file name with caches.
       -- e.g.
       -- all typescript files (File type)
       -- specific files (File name)
