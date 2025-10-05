@@ -51,11 +51,6 @@ function M.save(data)
 		return false
 	end
 
-	local stat = vim.uv.fs_stat(path)
-	if not stat or stat.type ~= 'file' then
-		return false
-	end
-
 	local fd = vim.uv.fs_open(path, 'w', tonumber('644', 8))
 	if not fd then
 		return false
