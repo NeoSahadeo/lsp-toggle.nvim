@@ -4,7 +4,8 @@
 
 A plugin to toggle LSP clients. It has a persistent cache so settings are saved!
 
-https://github.com/user-attachments/assets/fb71f7af-d6b3-44a2-ae42-b90e6d3fb63e
+https://github.com/user-attachments/assets/28e0aa53-752c-4fb8-aba3-e6694ba20a73
+
 
 </div>
 
