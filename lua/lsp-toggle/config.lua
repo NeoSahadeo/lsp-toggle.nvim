@@ -64,9 +64,11 @@ function M.setup(opts)
 	M.setup_autocmds()
 end
 
----@param bufnr integer
+---@param bufnr integer|nil
 function M.setup_lsps(bufnr)
-	fileutils.file_type = vim.bo[bufnr].filetype
+	if bufnr then
+		fileutils.file_type = vim.bo[bufnr].filetype
+	end
 	utils.merge_table_pf() -- merge saved data before enabling/disabling clients
 	for _, tb_server in pairs(utils.clients) do
 		vim.lsp.enable(tb_server.server_name, tb_server.enabled)
@@ -78,12 +80,14 @@ function M.setup_autocmds()
 
 	vim.api.nvim_create_autocmd('LspAttach', {
 		group = augroup,
-		callback = function(args)
-			if vim.bo[args.buf].buftype ~= '' then
+		callback = function()
+			if vim.bo.buftype ~= '' then
 				return
 			end
-			fileutils.set_file_path(vim.api.nvim_buf_get_name(args.buf))
-			M.setup_lsps(args.buf)
+			-- INFO: Buffer has to be 0, window contexts count as buffer attaches
+			-- will cause memory leak.
+			fileutils.set_file_path(vim.api.nvim_buf_get_name(0))
+			M.setup_lsps()
 		end,
 	})
 
